@@ -21,6 +21,25 @@ export interface IArmRepository {
     ): Promise<Logs[] | any>
 
     
+    listArmMuscleExercise(
+        id: number
+    ): Promise<Arm[] | any>
+
+    listBackMuscleExercise(
+        id: number
+    ): Promise<Back[] | any>
+
+    listChestMuscleExercise(
+        id: number
+    ): Promise<Chest | any>
+
+    listCoreMuscleExercise(
+        id: number
+    ): Promise<Core[] | any>
+
+    listLegMuscleExercise(
+        id: number
+    ): Promise<Leg | any>
 }
 
 export interface IExerciseRepository {

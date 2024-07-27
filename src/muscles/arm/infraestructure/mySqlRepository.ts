@@ -1,3 +1,4 @@
+import e from "express";
 import { query } from "../../../database/conecction";
 import { Logs } from "../domain/arm";
 import { IArmRepository } from "../domain/armRepository";
@@ -145,7 +146,7 @@ async registerLeg(
       sixteenHoursAgo.toISOString()
     ];
 
-    const [duplicateResult]: any = await query(checkDuplicateSql, checkDuplicateParams);
+    const duplicateResult: any = await query(checkDuplicateSql, checkDuplicateParams);
 
     // Si ya existe un registro para el mismo usuario, ejercicio y dentro de las últimas 16 horas, no insertar un nuevo registro
     if (duplicateResult.length > 0) {
@@ -171,9 +172,9 @@ async registerLeg(
       Squat ?? null, reps_Squat ?? null
     ];
 
-    const [result]: any = await query(insertSql, insertParams);
+    const result: any = await query(insertSql, insertParams);
 
-    if (result.insertId) {
+    if (result && result.insertId) {
       const user = new Leg(
         result.insertId, userid, 
         legPress, reps_legPress, 
@@ -243,9 +244,9 @@ async registerBack(
       sixteenHoursAgo.toISOString()
     ];
 
-    const [duplicateResult]: any = await query(checkDuplicateSql, checkDuplicateParams);
+    const duplicateResult: any = await query(checkDuplicateSql, checkDuplicateParams);
 
-    if (duplicateResult.length > 0) {
+    if (duplicateResult && duplicateResult.length > 0) {
       console.error("El usuario ya ha realizado este ejercicio en las últimas 16 horas.");
       return null;
     }
@@ -270,16 +271,16 @@ async registerBack(
       params[8], params[9]
     ];
 
-    const [result]: any = await query(insertSql, insertParams);
+    const result: any = await query(insertSql, insertParams);
 
-    if (result.insertId) {
+    if (result && result.insertId) {
       const user = new Back(
         result.insertId, userid,
-        deadlift, reps_deadlift,
-        bentOverRow, reps_bentOverRow,
-        pullUps, reps_pullUps,
-        latPulldown, reps_latPulldown,
-        dumbbellRow, reps_dumbbellRow
+        deadlift ?? 0, reps_deadlift ?? 0,
+        bentOverRow ?? 0, reps_bentOverRow ?? 0,
+        pullUps ?? 0, reps_pullUps ?? 0,
+        latPulldown ?? 0, reps_latPulldown ?? 0,
+        dumbbellRow ?? 0, reps_dumbbellRow ?? 0
       );
       return user;
     } else {
@@ -382,12 +383,13 @@ async registerBack(
             sixteenHoursAgo.toISOString()
         ];
 
-        const [duplicateResult]: any = await query(checkDuplicateSql, checkDuplicateParams);
+        const duplicateResult: any = await query(checkDuplicateSql, checkDuplicateParams);
 
-        if (duplicateResult.length > 0) {
+        if (duplicateResult && duplicateResult.length > 0) {
             console.error("El usuario ya ha realizado este ejercicio en las últimas 16 horas.");
             return null;
         }
+
         // Consulta para insertar el nuevo registro de ejercicio
         const insertSql = `
             INSERT INTO Arm (
@@ -412,9 +414,9 @@ async registerBack(
             ...params
         ];
 
-        const [result]: any = await query(insertSql, insertParams);
+        const result: any = await query(insertSql, insertParams);
 
-        if (result.insertId) {
+        if (result && result.insertId) {
             const user = new Arm(
                 result.insertId, userid,
                 bicepCurl ?? 0, reps_bicepCurl ?? 0,
@@ -441,6 +443,7 @@ async registerBack(
         return null;
     }
 }
+
 
 
 
@@ -495,10 +498,10 @@ async registerChest(
       sixteenHoursAgo.toISOString()
     ];
 
-    const [duplicateResult]: any = await query(checkDuplicateSql, checkDuplicateParams);
+    const duplicateResult: any = await query(checkDuplicateSql, checkDuplicateParams);
 
     // Si ya existe un registro para el mismo usuario, ejercicio y dentro de las últimas 16 horas, no insertar un nuevo registro
-    if (duplicateResult.length > 0) {
+    if (duplicateResult && duplicateResult.length > 0) {
       console.error("El usuario ya ha realizado este ejercicio en las últimas 16 horas.");
       return null;
     }
@@ -523,9 +526,9 @@ async registerChest(
       params[8], params[9]
     ];
 
-    const [result]: any = await query(insertSql, insertParams);
+    const result: any = await query(insertSql, insertParams);
 
-    if (result.insertId) {
+    if (result && result.insertId) {
       const user = new Chest(
         result.insertId, userid, 
         barbellBenchPress, reps_barbellBenchPress, 
@@ -544,6 +547,8 @@ async registerChest(
     return null;
   }
 }
+
+
 
 async registerCore(
   userid: number,
@@ -585,10 +590,10 @@ async registerCore(
       sixteenHoursAgo.toISOString()
     ];
 
-    const [duplicateResult]: any = await query(checkDuplicateSql, checkDuplicateParams);
+    const duplicateResult: any = await query(checkDuplicateSql, checkDuplicateParams);
 
     // Si ya existe un registro para el mismo usuario, ejercicio y dentro de las últimas 16 horas, no insertar un nuevo registro
-    if (duplicateResult.length > 0) {
+    if (duplicateResult && duplicateResult.length > 0) {
       console.error("El usuario ya ha realizado este ejercicio en las últimas 16 horas.");
       return null;
     }
@@ -609,9 +614,9 @@ async registerCore(
       params[4], params[5]
     ];
 
-    const [result]: any = await query(insertSql, insertParams);
+    const result: any = await query(insertSql, insertParams);
 
-    if (result.insertId) {
+    if (result && result.insertId) {
       const user = new Core(
         result.insertId, userid, 
         russian_twist, reps_russian_twist, 
@@ -630,5 +635,194 @@ async registerCore(
 }
 
 
+async listArmMuscleExercise(id: number): Promise<Arm[] | null> {
+  try {
+    const sql = "SELECT * FROM Arm WHERE userid = ? ORDER BY fecha DESC";
+    const result: any = await query(sql, [id]);
+
+    // Agrega un chequeo de depuración para ver el valor de `result`
+    console.log("Resultado de la consulta SQL:", result);
+
+    // Verifica si `result` es un array y si tiene al menos un elemento
+    if (!Array.isArray(result) || result.length === 0) {
+      return null;
+    }
+
+    const exercises = result.map((row: any) => new Arm(
+      row.id,
+      row.userid,
+      row.bicepCurl,
+      row.reps_bicepCurl,
+      row.hammerCurl,
+      row.reps_hammerCurl,
+      row.barbellCurl,
+      row.reps_barbellCurl,
+      row.skullcrusher,
+      row.reps_skullcrusher,
+      row.dumbbellOverheadTricepsExtension,
+      row.reps_dumbbellOverheadTricepsExtension,
+      row.tricepsPushdown,
+      row.reps_tricepsPushdown,
+      row.pushPress,
+      row.reps_pushPress,
+      row.closeGripBenchPress,
+      row.reps_closeGripBenchPress,
+      row.militaryPress,
+      row.reps_militaryPress,
+      row.lateralRaise,
+      row.reps_lateralRaise,
+      row.frontRaise,
+      row.reps_frontRaise,
+      row.reverseFly,
+      row.reps_reverse,
+      row.shoulderPress,
+      row.reps_shoulderPress
+    ));
+
+    return exercises;
+  } catch (error) {
+    console.error("Error al listar usuarios:", error);
+    return null;
+  }
+}
+
+async listLegMuscleExercise(id: number): Promise<Leg[] | null> {
+  try {
+    const sql = "SELECT * FROM Leg WHERE userid = ? ORDER BY fecha DESC";
+    const result: any = await query(sql, [id]);
+
+    // Agrega un chequeo de depuración para ver el valor de `result`
+    console.log("Resultado de la consulta SQL:", result);
+
+    // Verifica si `result` es un array y si tiene al menos un elemento
+    if (!Array.isArray(result) || result.length === 0) {
+      return null;
+    } 
+
+    // Mapea las filas a instancias de Leg
+    const exercises = result.map((row: any) => new Leg(
+      row.id,
+      row.userid,
+      row.legPress,
+      row.reps_legPress,
+      row.legCurl,
+      row.reps_legCurl,
+      row.legExtension,
+      row.reps_legExtension,
+      row.Squat,
+      row.reps_Squat
+    ));
+
+    return exercises;
+  } catch (error) {
+    console.error("Error al listar ejercicios de pierna:", error);
+    return null;
+  }
+}
+
+
+
+async listBackMuscleExercise(id: number): Promise<Back[] | any> {
+  try {
+    const sql = "SELECT * FROM Back WHERE userid = ? ORDER BY fecha DESC";
+    const result: any = await query(sql, [id]);
+
+    // Agrega un chequeo de depuración para ver el valor de `result`
+    console.log("Resultado de la consulta SQL:", result);
+
+    // Verifica si `result` es un array y si tiene al menos un elemento
+    if (!Array.isArray(result) || result.length === 0) {
+      return null;
+    } 
     
+          const exercises = result.map((row: any) => new Back(
+          row.id,
+          row.userid,
+          row.deadlift,
+          row.reps_deadlift,
+          row.bentOverRow,
+          row.reps_bentOverRow,
+          row.pullUps,
+          row.reps_pullUps,
+          row.latPulldown,
+          row.reps_latPulldown,
+          row.dumbbellRow,
+          row.reps_dumbbellRow
+          ));
+    
+        return exercises;
+      } catch (error) {
+        console.error("Error al listar usuarios:", error);
+    } 
+}
+
+async listChestMuscleExercise(id: number): Promise<Chest[] | null> {
+  try {
+    const sql = "SELECT * FROM Chest WHERE userid = ? ORDER BY fecha DESC";
+    const result: any = await query(sql, [id]);
+
+    // Agrega un chequeo de depuración para ver el valor de `result`
+    console.log("Resultado de la consulta SQL:", result);
+
+    // Verifica si `result` es un array y si tiene al menos un elemento
+    if (!Array.isArray(result) || result.length === 0) {
+      return null;
+    } 
+
+    // Mapea las filas a instancias de Chest
+    const exercises = result.map((row: any) => new Chest(
+      row.id,
+      row.userid,
+      row.barbellBenchPress,
+      row.reps_barbellBenchPress,
+      row.dumbellBenchPress,
+      row.reps_dumbellBenchPress,
+      row.inclineBenchPress,
+      row.reps_inclineBenchPress,
+      row.machineChestPress,
+      row.reps_machineChestPress,
+      row.declinePress,
+      row.reps_declinePress
+    ));
+
+    return exercises;
+  } catch (error) {
+    console.error("Error al listar ejercicios:", error);
+    return null;
+  }
+}
+
+
+
+async listCoreMuscleExercise(id: number): Promise<Core[] | any> {
+  try {
+    const sql = "SELECT * FROM Core WHERE userid = ? ORDER BY fecha DESC";
+    const result: any = await query(sql, [id]);
+
+    // Agrega un chequeo de depuración para ver el valor de `result`
+    console.log("Resultado de la consulta SQL:", result);
+
+    // Verifica si `result` es un array y si tiene al menos un elemento
+    if (!Array.isArray(result) || result.length === 0) {
+      return null;
+    }
+
+    const exercises = result.map((row: any) => new Core(
+      row.id,
+      row.userid,
+      row.russian_twist,
+      row.reps_russian_twist,
+      row.plank,
+      row.reps_plank,
+      row.crunch,
+      row.reps_crunch
+    ));
+
+    return exercises;
+  } catch (error) {
+    console.error("Error al listar usuarios:", error);
+    return null;
+  }
+}
+
 }
