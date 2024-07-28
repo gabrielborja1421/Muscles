@@ -648,38 +648,7 @@ async listArmMuscleExercise(id: number): Promise<Arm[] | null> {
       return null;
     }
 
-    const exercises = result.map((row: any) => new Arm(
-      row.id,
-      row.userid,
-      row.bicepCurl,
-      row.reps_bicepCurl,
-      row.hammerCurl,
-      row.reps_hammerCurl,
-      row.barbellCurl,
-      row.reps_barbellCurl,
-      row.skullcrusher,
-      row.reps_skullcrusher,
-      row.dumbbellOverheadTricepsExtension,
-      row.reps_dumbbellOverheadTricepsExtension,
-      row.tricepsPushdown,
-      row.reps_tricepsPushdown,
-      row.pushPress,
-      row.reps_pushPress,
-      row.closeGripBenchPress,
-      row.reps_closeGripBenchPress,
-      row.militaryPress,
-      row.reps_militaryPress,
-      row.lateralRaise,
-      row.reps_lateralRaise,
-      row.frontRaise,
-      row.reps_frontRaise,
-      row.reverseFly,
-      row.reps_reverse,
-      row.shoulderPress,
-      row.reps_shoulderPress
-    ));
-
-    return exercises;
+    return result;
   } catch (error) {
     console.error("Error al listar usuarios:", error);
     return null;
@@ -699,21 +668,7 @@ async listLegMuscleExercise(id: number): Promise<Leg[] | null> {
       return null;
     } 
 
-    // Mapea las filas a instancias de Leg
-    const exercises = result.map((row: any) => new Leg(
-      row.id,
-      row.userid,
-      row.legPress,
-      row.reps_legPress,
-      row.legCurl,
-      row.reps_legCurl,
-      row.legExtension,
-      row.reps_legExtension,
-      row.Squat,
-      row.reps_Squat
-    ));
-
-    return exercises;
+    return result;
   } catch (error) {
     console.error("Error al listar ejercicios de pierna:", error);
     return null;
@@ -735,22 +690,7 @@ async listBackMuscleExercise(id: number): Promise<Back[] | any> {
       return null;
     } 
     
-          const exercises = result.map((row: any) => new Back(
-          row.id,
-          row.userid,
-          row.deadlift,
-          row.reps_deadlift,
-          row.bentOverRow,
-          row.reps_bentOverRow,
-          row.pullUps,
-          row.reps_pullUps,
-          row.latPulldown,
-          row.reps_latPulldown,
-          row.dumbbellRow,
-          row.reps_dumbbellRow
-          ));
-    
-        return exercises;
+        return result;
       } catch (error) {
         console.error("Error al listar usuarios:", error);
     } 
@@ -769,23 +709,9 @@ async listChestMuscleExercise(id: number): Promise<Chest[] | null> {
       return null;
     } 
 
-    // Mapea las filas a instancias de Chest
-    const exercises = result.map((row: any) => new Chest(
-      row.id,
-      row.userid,
-      row.barbellBenchPress,
-      row.reps_barbellBenchPress,
-      row.dumbellBenchPress,
-      row.reps_dumbellBenchPress,
-      row.inclineBenchPress,
-      row.reps_inclineBenchPress,
-      row.machineChestPress,
-      row.reps_machineChestPress,
-      row.declinePress,
-      row.reps_declinePress
-    ));
+    
 
-    return exercises;
+    return result;
   } catch (error) {
     console.error("Error al listar ejercicios:", error);
     return null;
@@ -807,18 +733,7 @@ async listCoreMuscleExercise(id: number): Promise<Core[] | any> {
       return null;
     }
 
-    const exercises = result.map((row: any) => new Core(
-      row.id,
-      row.userid,
-      row.russian_twist,
-      row.reps_russian_twist,
-      row.plank,
-      row.reps_plank,
-      row.crunch,
-      row.reps_crunch
-    ));
-
-    return exercises;
+    return result;
   } catch (error) {
     console.error("Error al listar usuarios:", error);
     return null;
